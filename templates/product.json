@@ -77,8 +77,8 @@
         "padding_bottom": 12
       }
     },
-    "related-products": {
-      "type": "related-products",
+    "related-products-carousel": {
+      "type": "related-products-carousel",
       "settings": {
         "heading": "You may also like",
         "heading_size": "h2",
@@ -98,6 +98,6 @@
   },
   "order": [
     "main",
-    "related-products"
+    "related-products-carousel"
   ]
 }

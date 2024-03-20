@@ -1273,3 +1273,64 @@ class ProductRecommendations extends HTMLElement {
 }
 
 customElements.define('product-recommendations', ProductRecommendations);
+
+class ProductRecommendationsCarousel extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const handleIntersection = (entries, observer) => {
+      if (!entries[0].isIntersecting) return;
+      observer.unobserve(this);
+      // Convert data to object
+      let settingsData = this.dataset.settings.replace(/(\w+:)|(\w+ :)/g, function(matchedStr) {
+        return '"' + matchedStr.substring(0, matchedStr.length - 1) + '":';
+      }); 
+      let parsedSettingsData = JSON.parse(settingsData);
+
+      fetch(this.dataset.url)
+        .then((response) => response.text())
+        .then((text) => {
+          const html = document.createElement('div');
+          html.innerHTML = text;
+          const recommendations = html.querySelector('product-recommendations-carousel');
+
+          if (recommendations && recommendations.innerHTML.trim().length) {
+            this.innerHTML = recommendations.innerHTML;
+            // Initial Slick slider for recommendation products
+            $('.product-carousel').slick({
+              slidesToShow: parsedSettingsData.slidesToShow,
+              slidesToScroll: 1,
+              autoplay: parsedSettingsData.autoplay,
+              autoplaySpeed: parsedSettingsData.autoplaySpeed,
+              dots: parsedSettingsData.dots,
+              arrows: parsedSettingsData.arrows,
+              responsive: [
+                  {
+                      breakpoint: 768,
+                      settings: {
+                          slidesToShow: 2
+                      }
+                  },
+                  {
+                      breakpoint: 480,
+                      settings: {
+                          slidesToShow: 1
+                      }
+                  }
+              ]
+          });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    };
+
+    new IntersectionObserver(handleIntersection.bind(this)).observe(this);
+  }
+}
+
+customElements.define('product-recommendations-carousel', ProductRecommendationsCarousel);
+
